@@ -1,0 +1,231 @@
+import random
+from random import randint
+import sys
+import time
+from termcolor import colored
+from colorama import init
+
+
+
+init()
+#player = [randint(0, 9),randint(0, 9), 'P']
+
+def getRandomEnemies(numEnemies):
+    #create a lists of chest data structures ( two item lists of x, y int coords)
+    global enemyLoc
+    enemyLoc = []
+    for i in range(numEnemies):
+        enemyLoc.append([randint(0, boardSize - 1), randint(0, boardSize - 1)])
+    return enemyLoc
+    drawBoard(board)
+
+def clearClutter():
+#just to clear the enemies (fro now) and player sprite
+    for i, j in enumerate(board):
+        for ii, jj in enumerate(j):
+            if jj == 'E':
+                board[i][ii] = '.'
+            if jj == 'P':
+                board[i][ii] = '.'
+
+def drawBoard(board):
+    # This function prints out the board that it was passed.
+    # "board" is a list of  strings representing the board (ignore index 0)
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][0] + ' | ' + board[1][0] + ' | ' + board[2][0] + ' | ' + board[3][0] + ' | ' + board[4][0] + ' | ' + board[5][0] + ' | ' + board[6][0] + ' | ' + board[7][0] + ' | ' + board[8][0] + ' | ' + board[9][0] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][1] + ' | ' + board[1][1] + ' | ' + board[2][1] + ' | ' + board[3][1] + ' | ' + board[4][1] + ' | ' + board[5][1] + ' | ' + board[6][1] + ' | ' + board[7][1] + ' | ' + board[8][1] + ' | ' + board[9][1] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][2] + ' | ' + board[1][2] + ' | ' + board[2][2] + ' | ' + board[3][2] + ' | ' + board[4][2] + ' | ' + board[5][2] + ' | ' + board[6][2] + ' | ' + board[7][2] + ' | ' + board[8][2] + ' | ' + board[9][2] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][3] + ' | ' + board[1][3] + ' | ' + board[2][3] + ' | ' + board[3][3] + ' | ' + board[4][3] + ' | ' + board[5][3] + ' | ' + board[6][3] + ' | ' + board[7][3] + ' | ' + board[8][3] + ' | ' + board[9][3] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][4] + ' | ' + board[1][4] + ' | ' + board[2][4] + ' | ' + board[3][4] + ' | ' + board[4][4] + ' | ' + board[5][4] + ' | ' + board[6][4] + ' | ' + board[7][4] + ' | ' + board[8][4] + ' | ' + board[9][4] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][5] + ' | ' + board[1][5] + ' | ' + board[2][5] + ' | ' + board[3][5] + ' | ' + board[4][5] + ' | ' + board[5][5] + ' | ' + board[6][5] + ' | ' + board[7][5] + ' | ' + board[8][5] + ' | ' + board[9][5] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][6] + ' | ' + board[1][6] + ' | ' + board[2][6] + ' | ' + board[3][6] + ' | ' + board[4][6] + ' | ' + board[5][6] + ' | ' + board[6][6] + ' | ' + board[7][6] + ' | ' + board[8][6] + ' | ' + board[9][6] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][7] + ' | ' + board[1][7] + ' | ' + board[2][7] + ' | ' + board[3][7] + ' | ' + board[4][7] + ' | ' + board[5][7] + ' | ' + board[6][7] + ' | ' + board[7][7] + ' | ' + board[8][7] + ' | ' + board[9][7] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][8] + ' | ' + board[1][8] + ' | ' + board[2][8] + ' | ' + board[3][8] + ' | ' + board[4][8] + ' | ' + board[5][8] + ' | ' + board[6][8] + ' | ' + board[7][8] + ' | ' + board[8][8] + ' | ' + board[9][8] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+    print('| ' + board[0][9] + ' | ' + board[1][9] + ' | ' + board[2][9] + ' | ' + board[3][9] + ' | ' + board[4][9] + ' | ' + board[5][9] + ' | ' + board[6][9] + ' | ' + board[7][9] + ' | ' + board[8][9] + ' | ' + board[9][9] + ' | ' )
+    print('|---+---+---+---+---+---+---+---+---+---|')
+
+def eBrain(board, playerX, playerY, x, y):
+    # find if the player is in range, compare xy's to work out direction
+    global enemy
+    for cx, cy in enumerate(enemy):
+
+            if abs(cx - x) > abs(cy -y):
+                distance = abs(cx - x)
+            else:
+                distance = abs(cy - y)
+            if distance == 0:
+                board[cx][cy] = player[-1]
+            elif distance  > 0 and distance <= 3: #smallestDistance: # we want the closest treasure chest
+                #smallestDistance = distance
+
+                if x > playerX:
+                    enemy[0] -= 1
+                    makeMove(board, enemyLoc, player[0], player[1] )
+                    time.sleep(1)
+                    clearClutter()
+                    printBoard()
+                elif y > playerY:
+                    enemy[1] -= 1
+                    makeMove(board, enemyLoc, player[0], player[1] )
+                    time.sleep(1)
+                    clearClutter()
+                    printBoard()
+                elif x < playerX:
+                    enemy[0] += 1
+                    makeMove(board, enemyLoc, player[0], player[1] )
+                    time.sleep(1)
+                    clearClutter()
+                    printBoard()
+                elif y < playerY:
+                    enemy[1] += 1
+                    makeMove(board, enemyLoc, player[0], player[1] )
+                    time.sleep(1)
+                    clearClutter()
+                    printBoard()
+
+
+def makeMove(board, loc, x, y):
+    # Change the board data structure with a sonar device character. Remove tchests
+    # from the chests list as they are found, return False if this is an invalid
+    # move. otherwise return the string of the result of  this move.
+    #if not isValidMove(x, y):
+        #return False
+
+    #smallestDistance = 100 # any chest will be closer than 100
+    for cx, cy in enemyLoc:
+
+            if abs(cx - x) > abs(cy -y):
+                distance = abs(cx - x)
+            else:
+                distance = abs(cy - y)
+            if distance == 0:
+                board[cx][cy] = player[-1]
+            elif distance  > 0 and distance <= 2: #smallestDistance: # we want the closest treasure chest
+                #smallestDistance = distance
+                board[cx][cy] = 'E'
+                #print('Enemy is %s away from %s.'% (distance, player[-1]))
+
+"""
+    if smallestDistance == 0:
+        #xy is directly on a treasure chest
+        chests.remove([x, y])
+        return 'You have found a rebel leader!'
+    else:
+        if smallestDistance < 10:
+            board[x][y] = str(smallestDistance)
+            return 'Rebel transmissions detected at a distance of %s from the probe.' % (smallestDistance)
+        else:
+            board[x][y] = 'O'
+            return 'Probe did not detect anything. All hideouts out of range.'
+"""
+def whichEnemy(loc):
+    global enemy
+    global pMoveCount
+    enemy = []
+    for i, j in enumerate(enemyLoc):
+        for ii, jj in enumerate(j):
+            enemy = [j[0], jj]
+            eBrain(board, int(player[0]), int(player[1]), int(enemy[0]), int(enemy[1]))
+            enemyLoc[i] = [j[0], jj]
+    pMoveCount += 1
+
+
+def printBoard():
+    #print('_' * boardSize * 5 )
+    print('#' * boardSize * 5 + '##')
+    for i in board:
+        print('#' + str(i) + '#')
+    print('#' * boardSize * 5 + '##')
+def playerMove(command):
+    global pMoveCount
+    pMoveCount -= 1
+    if command == 'w':
+        if player[0] - 1 < 0:
+            print('You can\'t go any further.')
+        else:
+            player[0] -= 1
+    elif command == 'a':
+        if player[1] - 1 < 0:
+            print('You can\'t go any further.')
+        else:
+            player[1]  -= 1
+    elif command == 's':
+        if player[0] + 1 > boardSize - 1:
+            print('You can\'t go any further.')
+        else:
+            player[0] += 1
+    elif command == 'd':
+        if player[1] + 1 > boardSize - 1:
+            print('You can\'t go any further.')
+        else:
+            player[1] += 1
+    clearClutter()
+    board[player[0]][player[1]] = player[-1]
+    printBoard()
+
+pMoveCount = 1
+boardSize = randint(5, 15)
+board = [['.'] * boardSize for i in range(boardSize) ]
+player = [randint(0, len(board) - 1), randint(1, len(board) - 1),'P']
+board[player[0]][player[1]] = player[-1]
+getRandomEnemies(random.randint(3, 8))
+printBoard()
+
+while 1 < 2:
+    if pMoveCount == 0:
+        whichEnemy(enemyLoc)
+    makeMove(board, enemyLoc, player[0], player[1])
+    command = input()
+    if command == 'w':
+        playerMove('w')
+
+    elif command == 'd':
+        playerMove('d')
+
+    elif command == 's':
+        playerMove('s')
+
+    elif command == 'a':
+        playerMove('a')
+
+    elif command == 'skip':
+        print('not implemented')
+    elif command == 'exit':
+        sys.exit()
+    elif command == 'player':
+        print(player)
+    elif command == 'enemy':
+        print(enemy)
+    elif command == 'range':
+        print('not implemented')
+    else:
+
+        pass
+
+"""boardSize = randint(5, 15)
+    board = [['.'] * boardSize for i in range(boardSize) ]
+    player = [randint(0, len(board) - 1), randint(1, len(board) - 1), 'P']
+    board[player[0]][player[1]] = player[-1]
+    getRandomEnemies(random.randint(3, 8))
+
+
+    makeMove(board, enemyLoc, player[0], player[1])
+    for i in board:
+        print('_' * boardSize * 5 + '__' )
+        print('|' + str(i) + '|')
+
+    #time.sleep(1.5)
+    command = input('Enter to generate another map etc, e to exit').lower()
+    if command == 'e':
+        sys.exit()
+    else:
+        clearClutter()"""
